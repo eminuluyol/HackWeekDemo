@@ -23,6 +23,10 @@ internal class HomeScreenTranslations : Translations {
         resources!!.getString(R.string.google_service_error)
     } ?: ""
 
+    override fun permissionDenied() = resources?.let {
+        resources!!.getString(R.string.permission_denied)
+    } ?: ""
+
     override fun unbind() {
         resources = null
     }

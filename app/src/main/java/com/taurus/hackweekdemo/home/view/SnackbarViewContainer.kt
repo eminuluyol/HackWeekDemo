@@ -55,6 +55,10 @@ internal class SnackbarViewContainer private constructor(
                 val message = translations.googleServiceError()
                 showSnackbar(message)
             }
+            is PermissionDenied -> {
+                val message = translations.permissionDenied()
+                showSnackbar(message)
+            }
         }
     }
 

@@ -2,6 +2,7 @@ package com.taurus.hackweekdemo.home
 
 import com.taurus.hackweekdemo.core.utils.rxjava.SchedulingStrategy
 import com.taurus.hackweekdemo.home.view.HomeScreenViewContainer
+import com.taurus.hackweekdemo.home.view.MapViewContainer
 import com.taurus.hackweekdemo.home.view.SnackbarViewContainer
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -16,7 +17,8 @@ internal class HomeScreenPresenter constructor(
 
     override fun bind(
             homeScreenViewContainer: HomeScreenViewContainer,
-            snackbarViewContainer: SnackbarViewContainer
+            snackbarViewContainer: SnackbarViewContainer,
+            mapViewContainer: MapViewContainer
     ) {
         compositeDisposable += viewModel.viewStateStream()
                 .compose(schedulingStrategy.apply())
@@ -24,6 +26,7 @@ internal class HomeScreenPresenter constructor(
                         onNext = { state ->
                             homeScreenViewContainer.updateViewState(state)
                             snackbarViewContainer.updateViewState(state)
+                            mapViewContainer.updateViewState(state)
                         }
                 )
 

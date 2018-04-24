@@ -1,13 +1,11 @@
 package com.taurus.hackweekdemo.home.view
 
+import android.Manifest
 import android.app.Activity
 import android.graphics.Color
-import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.util.Log
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.taurus.hackweekdemo.home.data.CarItem
@@ -24,43 +22,57 @@ import android.graphics.Typeface
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
+import com.taurus.hackweekdemo.core.utils.permission.RxPermissionHandler
+import com.taurus.hackweekdemo.core.utils.rxjava.SchedulingStrategy
+import com.taurus.hackweekdemo.home.location.LocationData
+import com.taurus.hackweekdemo.home.location.LocationObservable
 
-internal class MapViewContainer(
-        private val commandProcessor: CommandProcessor
+private const val TAG = "MapViewContainer"
+
+internal class MapViewContainer constructor(
+        private val commandProcessor: CommandProcessor,
+        private val locationObservable: LocationObservable,
+        private val rxPermissionHandler: RxPermissionHandler,
+        private val schedulingStrategy: SchedulingStrategy
 ) : HomeScreenView {
 
     private var activity: Activity? = null
     private var mapFragment: SupportMapFragment? = null
     private var googleMap: GoogleMap? = null
-    private var googleApiClient: GoogleApiClient? = null
     private val markerList = ArrayList<Marker>()
 
     fun bind(activity: FragmentActivity?, mapFragment: SupportMapFragment?) {
         this.activity = activity
         this.mapFragment = mapFragment
 
-        activity?.let {
-            googleApiClient = GoogleApiClient.Builder(activity)
-                    .addConnectionCallbacks(object : GoogleApiClient.ConnectionCallbacks {
-                        override fun onConnected(p0: Bundle?) {
-                            // Once connected with google api, get the location
-                            googleMap?.let {
-                                //TODO askPermissionsForCurrentLocation
-                                //TODO askPermissions();
-                            }
-
+        locationObservable
+                .locations
+                .compose(schedulingStrategy.apply())
+                .doOnEach { notification ->
+                    Log.i(TAG, notification.toString())
+                }
+                .subscribe { it ->
+                    when(it.status) {
+                        LocationData.Status.PERMISSION_REQUIRED -> {
+                            rxPermissionHandler
+                                    .ensure(Manifest.permission.ACCESS_FINE_LOCATION)
+                                    .subscribe { permission ->
+                                        if (permission.granted) {
+                                            locationObservable.startLocationUpdates()
+                                        } else {
+                                            commandProcessor.process(UpdateSnackbarCommand(PermissionDenied))
+                                        }
+                                    }
                         }
-
-                        override fun onConnectionSuspended(p0: Int) {
+                        LocationData.Status.ENABLE_SETTINGS -> {
+                            //TODO haven't supported yet.
                         }
-
-                    })
-                    .addOnConnectionFailedListener { connectionResult ->
-                        Log.e("GoogleMap", "Connection failed: " + connectionResult.getErrorCode());
+                        LocationData.Status.LOCATION_SUCCESS -> {
+                            Log.i(TAG, "You got it!")
+                        }
+                        else -> Log.e(TAG, "Unsupported case")
                     }
-                    .addApi(LocationServices.API)
-                    .build()
-        }
+                }
     }
 
     override fun updateViewState(viewState: HomeScreenViewState) {
@@ -99,7 +111,7 @@ internal class MapViewContainer(
         // Add a marker in Map
         for (marker in carItems) {
 
-            val place = LatLng(marker.coordinates[0], marker.coordinates[1])
+            val place = LatLng(marker.coordinates[1], marker.coordinates[0])
             markerList.add(googleMap.addMarker(MarkerOptions().position(place)
                     .title(marker.name)
                     .snippet(marker.address)
@@ -110,7 +122,7 @@ internal class MapViewContainer(
         // move the camera
         if (carItems.isNotEmpty()) {
             val item = carItems[0]
-            val firstPlace = LatLng(item.coordinates[0], item.coordinates[1])
+            val firstPlace = LatLng(item.coordinates[1], item.coordinates[0])
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstPlace, 11.1f))
         }
 
@@ -152,20 +164,6 @@ internal class MapViewContainer(
 
     fun unbind() {
         activity = null
-    }
-
-    fun connectGoogleApiClient() {
-        googleApiClient?.let {
-            googleApiClient!!.connect()
-        }
-    }
-
-    fun stopLocationUpdates() {
-        googleApiClient?.let {
-            if (googleApiClient!!.isConnected) {
-                googleApiClient!!.disconnect()
-            }
-        }
     }
 
 }

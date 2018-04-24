@@ -5,12 +5,12 @@ import android.view.View
 import com.google.android.gms.maps.SupportMapFragment
 import com.taurus.hackweekdemo.R
 import com.taurus.hackweekdemo.core.base.BaseFragment
+import com.taurus.hackweekdemo.core.utils.permission.RxPermissionHandler
 import com.taurus.hackweekdemo.core.utils.rxjava.SchedulingStrategy
 import com.taurus.hackweekdemo.core.utils.snackbar.NotificationSnackbar
 import com.taurus.hackweekdemo.home.HomeScreenPresenter
 import com.taurus.hackweekdemo.home.HomeViewModel
 import com.taurus.hackweekdemo.home.Presenter
-import com.taurus.hackweekdemo.home.location.LocationData
 import com.taurus.hackweekdemo.home.location.LocationObservable
 import com.taurus.hackweekdemo.home.navigator.Navigator
 import com.taurus.hackweekdemo.home.translations.Translations
@@ -52,7 +52,8 @@ internal class HomeScreenFragment : BaseFragment<HomeViewModel>() {
         snackbarViewContainer.bind(view.rootView)
 
         val mapFragment: SupportMapFragment? = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapViewContainer = MapViewContainer(commandProcessor)
+        val locationObservable = LocationObservable(context!!)
+        mapViewContainer = MapViewContainer(commandProcessor, locationObservable, RxPermissionHandler(activity!!), schedulingStrategy)
         mapViewContainer.bind(activity, mapFragment)
 
         navigator.bind(this.activity)
@@ -70,33 +71,12 @@ internal class HomeScreenFragment : BaseFragment<HomeViewModel>() {
         ).apply {
             bind(
                     homeScreenViewContainer = rootContainer,
-                    snackbarViewContainer = snackbarViewContainer
+                    snackbarViewContainer = snackbarViewContainer,
+                    mapViewContainer = mapViewContainer
             )
         }
 
-        val locationObservable = LocationObservable(context!!)
-        locationObservable
-                .locations
-                .subscribe { it ->
-                    when(it.status) {
-                        LocationData.Status.PERMISSION_REQUIRED -> {}
-                        LocationData.Status.ENABLE_SETTINGS -> {}
-                        LocationData.Status.LOCATION_SUCCESS -> {}
-                    }
-                }
-
     }
-
-    override fun onStart() {
-        super.onStart()
-        mapViewContainer.connectGoogleApiClient()
-    }
-
-    override fun onPause() {
-        mapViewContainer.stopLocationUpdates()
-        super.onPause()
-    }
-
 
     override fun onDestroyView() {
         presenter.unbind()

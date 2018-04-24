@@ -80,6 +80,8 @@ dependencies {
     api "com.google.android.gms:play-services-maps:${libraries.gmsService}"
     api "com.google.android.gms:play-services-location:${libraries.gmsService}"
 
+    api "com.tbruyelle.rxpermissions2:rxpermissions:${libraries.rxPermisson}"
+
     kapt "android.arch.persistence.room:compiler:1.0.0"
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
     kapt "com.google.dagger:dagger-android-processor:${libraries.dagger}"

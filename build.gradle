@@ -60,7 +60,8 @@ ext {configuration = [
             supportTestRunner: "1.0.1",
             espressoCore     : "3.0.1",
             junit            : "4.12",
-            gmsService       : "15.0.0"
+            gmsService       : "15.0.0",
+            rxPermisson      : "0.9.5@aar"
     ]
 
 }

@@ -6,11 +6,11 @@ import android.location.Location
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.BehaviorSubject
 
 internal class LocationObservable(private val context: Context) {
 
-    private val locationSubject = PublishSubject.create<LocationData>()
+    private val locationSubject = BehaviorSubject.create<LocationData>()
 
     /**
      * Location Request and Client

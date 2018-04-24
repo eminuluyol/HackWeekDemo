@@ -19,6 +19,7 @@ internal class CarFeedsService @Inject constructor(
 
     private fun transformResponse(response: CarItemsWrapper): List<CarItem> =
              response.carItems
+                     .take(50)
                     .map { carItem ->
                         carItem.copy(photoUrl = dummyPhotoProvider.provideDummyPhoto())
                     }

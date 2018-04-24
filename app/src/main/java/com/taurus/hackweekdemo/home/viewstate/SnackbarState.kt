@@ -9,3 +9,5 @@ internal object GenericError : SnackbarState()
 internal object NoInternetConnection : SnackbarState()
 
 internal object ServiceError : SnackbarState()
+
+internal object PermissionDenied : SnackbarState()

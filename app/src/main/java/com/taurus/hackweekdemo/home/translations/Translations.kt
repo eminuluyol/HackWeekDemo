@@ -12,6 +12,8 @@ internal interface Translations {
 
     fun googleServiceError() : String
 
+    fun permissionDenied() : String
+
     fun unbind()
 
 }
