@@ -1,0 +1,87 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+
+def libraries = rootProject.ext.libraries
+def configuration = rootProject.ext.configuration
+
+android {
+    compileSdkVersion configuration.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion configuration.minSdkVersion
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions "build"
+    productFlavors {
+        dev {
+            dimension "build"
+            buildConfigField "String", "API_URL", '"https://s3-us-west-2.amazonaws.com"'
+        }
+        prod {
+            dimension "build"
+            buildConfigField "String", "API_URL", '"https://s3-us-west-2.amazonaws.com"'
+        }
+    }
+}
+
+configurations.all {
+    resolutionStrategy.force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${libraries.kotlin}"
+    resolutionStrategy.force "org.jetbrains.kotlin:kotlin-reflect:${libraries.kotlin}"
+    resolutionStrategy.force "org.jetbrains.kotlin:kotlin-stdlib:${libraries.kotlin}"
+}
+
+dependencies {
+    androidTestImplementation "com.android.support.test:runner:${libraries.supportTestRunner}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${libraries.espressoCore}"
+
+    testImplementation "junit:junit:${libraries.junit}"
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api "com.android.support:appcompat-v7:${libraries.support}"
+    api "com.android.support:design:${libraries.support}"
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${libraries.kotlin}"
+
+    api "com.google.dagger:dagger:${libraries.dagger}"
+    api "com.google.dagger:dagger-android:${libraries.dagger}"
+    api "com.google.dagger:dagger-android-support:${libraries.dagger}"
+
+    api "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    api "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+    api "io.reactivex.rxjava2:rxkotlin:$libraries.rxkotlin"
+
+    api "android.arch.lifecycle:extensions:${libraries.arch}"
+    api "android.arch.lifecycle:reactivestreams:${libraries.arch}"
+
+    api "com.squareup.picasso:picasso:${libraries.picasso}"
+
+    api "com.squareup.retrofit2:retrofit:${libraries.retrofit}"
+    api "com.squareup.retrofit2:adapter-rxjava2:${libraries.retrofit}"
+    api "com.squareup.retrofit2:converter-gson:${libraries.retrofit}"
+
+    api "com.squareup.moshi:moshi:$libraries.moshi_version"
+    api "com.squareup.moshi:moshi-kotlin:$libraries.moshi_version"
+
+    api "com.squareup.okhttp3:okhttp:${libraries.okhttp}"
+    api "com.squareup.okhttp3:logging-interceptor:${libraries.okhttp}"
+
+    api "android.arch.persistence.room:runtime:${libraries.archRoom}"
+    api "android.arch.persistence.room:rxjava2:${libraries.archRoom}"
+
+    api "com.google.android.gms:play-services-maps:${libraries.gmsService}"
+    api "com.google.android.gms:play-services-location:${libraries.gmsService}"
+
+    kapt "android.arch.persistence.room:compiler:1.0.0"
+    kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
+    kapt "com.google.dagger:dagger-android-processor:${libraries.dagger}"
+
+}
