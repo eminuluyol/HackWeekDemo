@@ -50,8 +50,10 @@ internal class MapViewContainer constructor(
                                     .ensure(Manifest.permission.ACCESS_FINE_LOCATION)
                                     .subscribe { permission ->
                                         if (permission.granted) {
+                                            Log.i("Burada", " You got it1")
                                             locationObservable.startLocationUpdates()
                                         } else {
+                                            Log.i("Burada", " You got it2")
                                             commandProcessor.process(UpdateSnackbarCommand(PermissionDenied))
                                         }
                                     }
@@ -60,7 +62,9 @@ internal class MapViewContainer constructor(
                             //TODO haven't supported yet.
                         }
                         LocationData.Status.LOCATION_SUCCESS -> {
-                            Log.i(TAG, "You got it!")
+                            Log.i("Burada", " You got it3")
+                            val myLocation = LatLng(it.location!!.latitude, it.location.longitude)
+                            googleMap?.addMarker(MarkerOptions().position(myLocation).title("This is Me").icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location_active)))
                         }
                         else -> Log.e(TAG, "Unsupported case")
                     }

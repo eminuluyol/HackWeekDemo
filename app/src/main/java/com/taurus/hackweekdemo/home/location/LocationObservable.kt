@@ -3,6 +3,7 @@ package com.taurus.hackweekdemo.home.location
 import android.Manifest
 import android.content.Context
 import android.location.Location
+import android.util.Log
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import io.reactivex.Observable
@@ -27,6 +28,7 @@ internal class LocationObservable(private val context: Context) {
     val locations: Observable<LocationData>
         get() = locationSubject
                 .doOnSubscribe {
+                    Log.i("Burada", " You got it4")
                     checkPermissionGranted()
                 }
 
@@ -44,7 +46,7 @@ internal class LocationObservable(private val context: Context) {
      * Checks runtime permission first.
      * Then check if GPS settings is enabled by user
      * If all good, then start listening user location
-     * and update livedata
+     * and update BehaviorSubject
      */
     fun startLocationUpdates() {
         if (!PermissionUtils.checkLocationPermission(context)) {
@@ -55,6 +57,7 @@ internal class LocationObservable(private val context: Context) {
 
         settingsTask.addOnSuccessListener {
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                Log.i("Burada", " Girdi")
                 location?.let { LocationData.success(location) }
             }
             fusedLocationClient.requestLocationUpdates(locationRequest, fineLocationCallback, null)
@@ -71,9 +74,7 @@ internal class LocationObservable(private val context: Context) {
     }
 
     private fun checkPermissionGranted() {
-        if (!PermissionUtils.checkLocationPermission(context)) {
-            locationSubject.onNext(LocationData.permissionRequired(listOf(Manifest.permission.ACCESS_FINE_LOCATION)))
-        }
+        locationSubject.onNext(LocationData.permissionRequired(listOf(Manifest.permission.ACCESS_FINE_LOCATION)))
     }
 
     private fun createLocationRequest(): LocationRequest {
