@@ -16,8 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <!-- Splash activity -->
-        <activity android:name=".splash.SplashScreenActivity" android:theme="@style/SplashTheme"
-            android:screenOrientation="portrait" android:noHistory="true">
+        <activity
+            android:name=".splash.SplashScreenActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,7 +28,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".home.HomeActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".home.HomeActivity"
+            android:screenOrientation="portrait" />
+
+        <service android:name=".notification.service.LocationService"/>
+
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
