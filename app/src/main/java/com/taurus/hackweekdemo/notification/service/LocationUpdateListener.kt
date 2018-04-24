@@ -1,14 +1,13 @@
 package com.taurus.hackweekdemo.notification.service
 
 import android.content.Context
-import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 
-class LocationUpdateListener(val intent: Intent, val startId: Int, val context: Context, val locationChanged: (Location) -> Unit) : LocationListener {
+class LocationUpdateListener(val context: Context, private val locationChanged: (Location) -> Unit) : LocationListener {
 
     private var bestLocation: Location? = null
 

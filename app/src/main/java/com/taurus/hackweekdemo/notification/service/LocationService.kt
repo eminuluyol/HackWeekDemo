@@ -5,10 +5,10 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
+import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import com.google.gson.Gson
-import com.taurus.hackweekdemo.home.data.CarItemsWrapper
+import com.taurus.hackweekdemo.home.data.CarItem
 import com.taurus.hackweekdemo.notification.LocationServicePresenter
 import com.taurus.hackweekdemo.notification.LocationServiceView
 
@@ -16,31 +16,23 @@ import com.taurus.hackweekdemo.notification.LocationServiceView
 class LocationService : Service(), LocationServiceView {
     private lateinit var locationManager: LocationManager
     private lateinit var updateListener: LocationUpdateListener
-    private lateinit var carItemsWrapper: CarItemsWrapper
-
-    lateinit var intent: Intent
-    val presenter = LocationServicePresenter(this)
-    lateinit var notificationHelper: NotificationHelper
+    private lateinit var intent: Intent
+    private val presenter = LocationServicePresenter(this)
+    private lateinit var notificationHelper: NotificationHelper
+    private val binder = LocalBinder()
 
     override fun onCreate() {
         super.onCreate()
         intent = Intent(BROADCAST_ACTION)
         notificationHelper = NotificationHelper(baseContext)
-        //TODO get dataset from intent
-        readData()
-    }
-
-    override fun onStart(intent: Intent, startId: Int) {
-        handleStart(intent, startId)
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        handleStart(intent, startId)
         return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent): IBinder? {
-        return null
+        return binder
     }
 
     override fun onDestroy() {
@@ -55,17 +47,10 @@ class LocationService : Service(), LocationServiceView {
         notificationHelper.create(title, subtitle, distance, vin)
     }
 
-    private fun readData() {
-        val json = applicationContext.assets.open("locations.json").bufferedReader().use {
-            it.readText()
-        }
-        carItemsWrapper = Gson().fromJson<CarItemsWrapper>(json, CarItemsWrapper::class.java)
-    }
-
     @SuppressLint("MissingPermission")
-    private fun handleStart(intent: Intent, startId: Int) {
+    fun findNearbyCars(carItems: List<CarItem>) {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        updateListener = LocationUpdateListener(intent, startId, this, { presenter.locationChanged(carItemsWrapper, it) })
+        updateListener = LocationUpdateListener(this, { presenter.locationChanged(carItems, it) })
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 1000f, updateListener)
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 1000f, updateListener)
     }
@@ -74,5 +59,10 @@ class LocationService : Service(), LocationServiceView {
         val TAG = LocationService::class.java.simpleName
         const val BROADCAST_ACTION = "Location update"
         const val CHANNEL_ID = "channel_id"
+    }
+
+    inner class LocalBinder : Binder() {
+        val serviceInstance: LocationService
+            get() = this@LocationService
     }
 }
