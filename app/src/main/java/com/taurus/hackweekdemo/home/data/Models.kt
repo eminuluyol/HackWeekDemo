@@ -2,11 +2,11 @@ package com.taurus.hackweekdemo.home.data
 
 import com.google.gson.annotations.SerializedName
 
-internal data class CarItemsWrapper(
+data class CarItemsWrapper(
         @SerializedName("placemarks") val carItems: List<CarItem>
 )
 
-internal data class CarItem(
+data class CarItem(
         val photoUrl: String,
         @SerializedName("address") val address: String,
         @SerializedName("coordinates") val coordinates: List<Double>,

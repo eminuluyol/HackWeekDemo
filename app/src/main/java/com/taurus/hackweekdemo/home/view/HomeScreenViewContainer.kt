@@ -8,12 +8,14 @@ import com.taurus.hackweekdemo.home.data.SelectedCarItem
 import com.taurus.hackweekdemo.home.viewstate.CommandProcessor
 import com.taurus.hackweekdemo.home.viewstate.HomeScreenViewState
 import com.taurus.hackweekdemo.home.viewstate.commands.UpdateMapPinPositionCommand
+import com.taurus.hackweekdemo.notification.service.LocationServiceHelper
 import kotlinx.android.synthetic.main.fragment_home_screen.view.*
 
 internal class HomeScreenViewContainer(
         contentView: View,
         private val carFeedsAdapter: CarFeedsAdapter,
-        commandProcessor: CommandProcessor
+        commandProcessor: CommandProcessor,
+        val serviceHelper: LocationServiceHelper
 ) : HomeScreenView {
 
     private val carFeedsList: RecyclerView = contentView.carFeedList
@@ -41,6 +43,7 @@ internal class HomeScreenViewContainer(
 
     override fun updateViewState(viewState: HomeScreenViewState) {
         carFeedsAdapter.addCarFeeds(viewState.carItems)
+        serviceHelper.locationService?.findNearbyCars(viewState.carItems)
     }
 
 }

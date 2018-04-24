@@ -16,6 +16,7 @@ import com.taurus.hackweekdemo.home.navigator.Navigator
 import com.taurus.hackweekdemo.home.translations.Translations
 import com.taurus.hackweekdemo.home.viewstate.CommandProcessor
 import com.taurus.hackweekdemo.home.viewstate.commands.CheckGooglePlayServiceAvailabilityCommand
+import com.taurus.hackweekdemo.notification.service.LocationServiceHelper
 import javax.inject.Inject
 
 
@@ -35,6 +36,7 @@ internal class HomeScreenFragment : BaseFragment<HomeViewModel>() {
     private lateinit var presenter: Presenter
     private lateinit var snackbarViewContainer: SnackbarViewContainer
     private lateinit var mapViewContainer: MapViewContainer
+    private lateinit var serviceHelper: LocationServiceHelper
 
     override fun getLayoutResId() = R.layout.fragment_home_screen
 
@@ -57,12 +59,13 @@ internal class HomeScreenFragment : BaseFragment<HomeViewModel>() {
         mapViewContainer.bind(activity, mapFragment)
 
         navigator.bind(this.activity)
+        activity?.let { serviceHelper = LocationServiceHelper(it) }
         val savedSearchAdapter = CarFeedsAdapter(commandProcessor, navigator)
-
         val rootContainer = HomeScreenViewContainer(
                 view,
                 savedSearchAdapter,
-                commandProcessor
+                commandProcessor,
+                serviceHelper
         )
 
         presenter = HomeScreenPresenter(
@@ -84,6 +87,7 @@ internal class HomeScreenFragment : BaseFragment<HomeViewModel>() {
         mapViewContainer.unbind()
         navigator.unbind()
         translations.unbind()
+        serviceHelper.unbind()
         super.onDestroyView()
     }
 
