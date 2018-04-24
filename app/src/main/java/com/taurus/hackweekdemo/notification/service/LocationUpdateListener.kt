@@ -21,12 +21,12 @@ class LocationUpdateListener(val context: Context, private val locationChanged: 
     }
 
     override fun onProviderDisabled(provider: String) {
-        Toast.makeText(context, "Gps Disabled", Toast.LENGTH_SHORT).show()
+        Log.d(TAG,"GPS disabled")
     }
 
 
     override fun onProviderEnabled(provider: String) {
-        Toast.makeText(context, "Gps Enabled", Toast.LENGTH_SHORT).show()
+        Log.d(TAG,"GPS enabled")
     }
 
 
