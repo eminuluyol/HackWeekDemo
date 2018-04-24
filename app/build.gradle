@@ -84,6 +84,9 @@ dependencies {
 
     api "com.tbruyelle.rxpermissions2:rxpermissions:${libraries.rxPermisson}"
 
+    api "de.hdodenhof:circleimageview:${libraries.circleImage}"
+
+
     kapt "android.arch.persistence.room:compiler:1.0.0"
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
     kapt "com.google.dagger:dagger-android-processor:${libraries.dagger}"

@@ -8,8 +8,9 @@ import javax.inject.Inject
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
+import dagger.android.support.DaggerFragment
 
-internal abstract class BaseFragment<VM : ViewModel> : dagger.android.support.DaggerFragment() {
+internal abstract class BaseFragment<VM : ViewModel> : DaggerFragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory

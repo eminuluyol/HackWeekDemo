@@ -61,7 +61,8 @@ ext {configuration = [
             espressoCore     : "3.0.1",
             junit            : "4.12",
             gmsService       : "15.0.0",
-            rxPermisson      : "0.9.5@aar"
+            rxPermisson      : "0.9.5@aar",
+            circleImage      : "2.2.0"
     ]
 
 }

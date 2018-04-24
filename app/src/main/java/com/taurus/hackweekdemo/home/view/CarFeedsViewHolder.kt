@@ -5,12 +5,12 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
+import com.google.android.gms.common.config.GservicesValue.init
 import com.squareup.picasso.Picasso
 import com.taurus.hackweekdemo.R
 import com.taurus.hackweekdemo.core.extensions.into
 import com.taurus.hackweekdemo.home.data.CarItem
 import com.taurus.hackweekdemo.home.navigator.Navigator
-import com.taurus.hackweekdemo.home.viewstate.CommandProcessor
 import kotlinx.android.synthetic.main.car_feeds_list_item.view.*
 
 internal class CarFeedsViewHolder(
@@ -23,27 +23,17 @@ internal class CarFeedsViewHolder(
     private val makeModelTextView: TextView = itemView.text_view_model_make
     private val descriptionTextView: TextView = itemView.text_view_description
 
-//    init {
-//        itemView.setOnFocusChangeListener({ view, hasFocus ->
-//            if (hasFocus) {
-//                // run scale animation and make it bigger
-//                val anim = AnimationUtils.loadAnimation(view.context, R.anim.scale_in)
-//                view.startAnimation(anim)
-//                anim.fillAfter = true
-//            } else {
-//                // run scale animation and make it smaller
-//                val anim = AnimationUtils.loadAnimation(view.context, R.anim.scale_out)
-//                view.startAnimation(anim)
-//                anim.fillAfter = true
-//            }
-//        })
-//    }
+    private lateinit var carItem: CarItem
+
+    init {
+        itemView.setOnClickListener {
+            navigator.launchDetailActivity(it, carItem)
+        }
+    }
 
     fun render(carItem: CarItem) {
 
-        itemLayout.setOnClickListener {
-            navigator.launchDetailActivity()
-        }
+        this.carItem = carItem
 
         Picasso.with(itemView.context)
                 .load(carItem.photoUrl)

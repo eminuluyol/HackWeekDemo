@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HackWeekDemo</string>
+    <string name="app_name">AutoCheck</string>
     <string name="network_error">Network failed</string>
     <string name="no_internet_connection">No internet connection. Some info might be outdated.</string>
     <string name="google_service_error">We’re sorry. We could not connect to Google Maps.</string>

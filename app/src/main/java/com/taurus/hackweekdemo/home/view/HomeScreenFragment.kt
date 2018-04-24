@@ -57,7 +57,7 @@ internal class HomeScreenFragment : BaseFragment<HomeViewModel>() {
         mapViewContainer = MapViewContainer(commandProcessor, locationObservable, RxPermissionHandler(activity!!), schedulingStrategy)
         mapViewContainer.bind(activity, mapFragment)
 
-        navigator.bind(this.activity)
+        navigator.bind(activity)
         activity?.let { serviceHelper = LocationServiceHelper(it) }
         val savedSearchAdapter = CarFeedsAdapter(navigator)
         val rootContainer = HomeScreenViewContainer(
