@@ -48,6 +48,7 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     api "com.android.support:appcompat-v7:${libraries.support}"
+    api "com.android.support:cardview-v7:${libraries.support}"
     api "com.android.support:design:${libraries.support}"
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${libraries.kotlin}"
 

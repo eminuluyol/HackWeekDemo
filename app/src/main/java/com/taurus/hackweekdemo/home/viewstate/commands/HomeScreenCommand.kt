@@ -14,4 +14,6 @@ internal data class NewItemsCommand(val items: List<CarItem>) : HomeScreenComman
 
 internal data class CheckGooglePlayServiceAvailabilityCommand(val context: Context) : HomeScreenCommand()
 
+internal data class UpdateMapPinPositionCommand(val carItem: CarItem) : HomeScreenCommand()
+
 

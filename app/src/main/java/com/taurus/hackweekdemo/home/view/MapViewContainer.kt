@@ -48,9 +48,6 @@ internal class MapViewContainer constructor(
         locationObservable
                 .locations
                 .compose(schedulingStrategy.apply())
-                .doOnEach { notification ->
-                    Log.i(TAG, notification.toString())
-                }
                 .subscribe { it ->
                     when(it.status) {
                         LocationData.Status.PERMISSION_REQUIRED -> {
@@ -92,6 +89,14 @@ internal class MapViewContainer constructor(
                 showGoogleServiceError()
             }
         }
+
+        viewState.selectedCarItem?.let {
+            updateSelectedPinPosition()
+        }
+
+    }
+
+    private fun updateSelectedPinPosition() {
 
     }
 

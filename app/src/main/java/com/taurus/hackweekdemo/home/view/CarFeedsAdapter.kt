@@ -8,6 +8,7 @@ import com.taurus.hackweekdemo.core.extensions.inflate
 import com.taurus.hackweekdemo.home.data.CarItem
 import com.taurus.hackweekdemo.home.navigator.Navigator
 import com.taurus.hackweekdemo.home.viewstate.CommandProcessor
+import kotlinx.android.synthetic.main.car_feeds_list_item.view.*
 
 internal class CarFeedsAdapter(
         private val commandProcessor: CommandProcessor,
@@ -17,16 +18,21 @@ internal class CarFeedsAdapter(
     private val carFeedList = mutableListOf<CarItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        CarFeedsViewHolder(
-                parent.inflate(R.layout.car_feeds_list_item),
-                commandProcessor,
-                navigator
-        )
+            CarFeedsViewHolder(
+                    parent.inflate(R.layout.car_feeds_list_item),
+                    commandProcessor,
+                    navigator
+            )
 
     override fun getItemCount() = carFeedList.size
 
     override fun onBindViewHolder(holder: CarFeedsViewHolder, position: Int) {
         holder.render(carFeedList[position])
+    }
+
+    override fun onViewDetachedFromWindow(holder: CarFeedsViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        holder.itemView.image_view_car_photo.clearAnimation()
     }
 
     fun addCarFeeds(updatedSavedSearches: List<CarItem>) {
@@ -38,5 +44,7 @@ internal class CarFeedsAdapter(
             oldItem.address == newItem.address
         }
     }
+
+    fun firsVisibleItem(position: Int): CarItem = carFeedList[position]
 
 }

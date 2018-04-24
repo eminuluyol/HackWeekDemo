@@ -83,5 +83,4 @@ internal class LocationObservable(private val context: Context) {
         return locationRequest
     }
 
-
 }

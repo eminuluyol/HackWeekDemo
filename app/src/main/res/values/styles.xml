@@ -5,4 +5,16 @@
         <item name="android:textColorPrimary">@color/black</item>
     </style>
 
+    <style name="CardViewStyle" parent="CardView">
+        <item name="cardCornerRadius">@dimen/space_tiny</item>
+        <item name="cardElevation">@dimen/space_small</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="cardPreventCornerOverlap">false</item>
+        <item name="android:layout_marginStart">@dimen/space_small</item>
+        <item name="android:layout_marginEnd">@dimen/space_small</item>
+        <item name="android:layout_marginTop">@dimen/space_small</item>
+        <item name="android:layout_marginBottom">@dimen/space_small</item>
+        <item name="cardBackgroundColor">@color/white</item>
+    </style>
+
 </resources>
