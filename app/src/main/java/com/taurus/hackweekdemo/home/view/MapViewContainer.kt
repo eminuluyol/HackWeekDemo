@@ -2,14 +2,8 @@ package com.taurus.hackweekdemo.home.view
 
 import android.Manifest
 import android.app.Activity
-import android.graphics.Color
-import android.graphics.Typeface
 import android.support.v4.app.FragmentActivity
 import android.util.Log
-import android.view.Gravity
-import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -27,7 +21,6 @@ import com.taurus.hackweekdemo.home.location.LocationData
 import com.taurus.hackweekdemo.home.location.LocationObservable
 import com.taurus.hackweekdemo.home.viewstate.*
 import com.taurus.hackweekdemo.home.viewstate.commands.UpdateSnackbarCommand
-
 
 private const val TAG = "MapViewContainer"
 
@@ -105,19 +98,24 @@ internal class MapViewContainer constructor(
         val previousMarker = markerList[selectedCarItem.previousPosition]
 
         marker.remove()
-        googleMap?.addMarker(MarkerOptions().position(nextDestination)
+        val activatedMarker = googleMap?.addMarker(MarkerOptions().position(nextDestination)
                 .title(selectedCarItem.carItem.name)
                 .snippet(selectedCarItem.carItem.address)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location_active)))
-        marker.showInfoWindow()
+        markerList.remove(marker)
+        markerList.add(selectedCarItem.position, activatedMarker!!)
 
         previousMarker.remove()
-        googleMap?.addMarker(MarkerOptions().position(previousMarker.position)
+        val deactivatedMarker = googleMap?.addMarker(MarkerOptions().position(previousMarker.position)
                 .title(selectedCarItem.carItem.name)
                 .snippet(selectedCarItem.carItem.address)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location_deactive)))
+        markerList.remove(previousMarker)
+        markerList.add(selectedCarItem.previousPosition, previousMarker!!)
 
         googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(nextDestination, 16f))
+        deactivatedMarker?.hideInfoWindow()
+        activatedMarker.showInfoWindow()
     }
 
     private fun showGoogleServiceError() {
@@ -133,7 +131,7 @@ internal class MapViewContainer constructor(
 
     private fun drawPlaceMarkersOnMap(googleMap: GoogleMap, carItems: List<CarItem>) {
 
-        // Add a marker in Map
+        // Add markers in Map
         for (marker in carItems) {
 
             val place = LatLng(marker.coordinates[1], marker.coordinates[0])
@@ -151,40 +149,9 @@ internal class MapViewContainer constructor(
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstPlace, 11.1f))
         }
 
-        setInfoWindowAdapter(googleMap)
-    }
+        val adapter = CustomInfoWindowAdapter(activity!!)
+        googleMap.setInfoWindowAdapter(adapter);
 
-    private fun setInfoWindowAdapter(googleMap: GoogleMap) {
-
-        googleMap.setInfoWindowAdapter(object : GoogleMap.InfoWindowAdapter {
-
-            override fun getInfoWindow(arg0: Marker): View? {
-                return null
-            }
-
-            override fun getInfoContents(marker: Marker): View {
-
-                val info = LinearLayout(activity)
-                info.orientation = LinearLayout.VERTICAL
-
-                val title = TextView(activity)
-                title.setTextColor(Color.BLACK)
-                title.gravity = Gravity.CENTER
-                title.setTypeface(null, Typeface.BOLD)
-                title.text = marker.title
-
-                val snippet = TextView(activity)
-                val padding = 4
-                snippet.setPadding(padding, 0, padding, 0)
-                snippet.setTextColor(Color.GRAY)
-                snippet.text = marker.snippet
-
-                info.addView(title)
-                info.addView(snippet)
-
-                return info
-            }
-        })
     }
 
     fun unbind() {

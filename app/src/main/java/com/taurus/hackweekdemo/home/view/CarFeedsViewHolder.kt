@@ -25,16 +25,16 @@ internal class CarFeedsViewHolder(
     private val descriptionTextView: TextView = itemView.text_view_description
 
 //    init {
-//        itemView.rootView.setOnFocusChangeListener({ _, hasFocus ->
+//        itemView.setOnFocusChangeListener({ view, hasFocus ->
 //            if (hasFocus) {
 //                // run scale animation and make it bigger
-//                val anim = AnimationUtils.loadAnimation(itemView.context, R.anim.scale_in)
-//                itemView.rootView.startAnimation(anim)
+//                val anim = AnimationUtils.loadAnimation(view.context, R.anim.scale_in)
+//                view.startAnimation(anim)
 //                anim.fillAfter = true
 //            } else {
 //                // run scale animation and make it smaller
-//                val anim = AnimationUtils.loadAnimation(itemView.context, R.anim.scale_out)
-//                itemView.rootView.startAnimation(anim)
+//                val anim = AnimationUtils.loadAnimation(view.context, R.anim.scale_out)
+//                view.startAnimation(anim)
 //                anim.fillAfter = true
 //            }
 //        })
