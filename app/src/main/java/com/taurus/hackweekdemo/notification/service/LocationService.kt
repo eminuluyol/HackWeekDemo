@@ -1,27 +1,37 @@
 package com.taurus.hackweekdemo.notification.service
 
 import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
 import android.os.IBinder
+import android.support.v4.app.NotificationCompat
 import android.util.Log
-import android.widget.Toast
+import com.google.gson.Gson
+import com.taurus.hackweekdemo.R
+import com.taurus.hackweekdemo.home.data.CarItemsWrapper
+import com.taurus.hackweekdemo.notification.LocationServicePresenter
+import com.taurus.hackweekdemo.notification.LocationServiceView
+import android.app.NotificationChannel
+import android.os.Build
 
-class LocationService : Service() {
+
+class LocationService : Service(), LocationServiceView {
     private lateinit var locationManager: LocationManager
-    private lateinit var listener: MyLocationListener
-    var previousBestLocation: Location? = null
+    private lateinit var updateListener: LocationUpdateListener
+    private lateinit var carItemsWrapper: CarItemsWrapper
 
     lateinit var intent: Intent
+    val presenter = LocationServicePresenter(this)
 
     override fun onCreate() {
         super.onCreate()
         intent = Intent(BROADCAST_ACTION)
+        //TODO get dataset from intent
+        readData()
     }
 
     override fun onStart(intent: Intent, startId: Int) {
@@ -33,113 +43,66 @@ class LocationService : Service() {
         return START_NOT_STICKY
     }
 
-    @SuppressLint("MissingPermission")
-    private fun handleStart(intent: Intent, startId: Int) {
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        listener = MyLocationListener()
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 1000f, listener)
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 1000f, listener)
-    }
-
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
-
-    private fun isBetterLocation(location: Location, currentBestLocation: Location?): Boolean {
-        if (currentBestLocation == null) {
-            // A new location is always better than no location
-            return true
-        }
-
-        // Check whether the new location fix is newer or older
-        val timeDelta = location.time - currentBestLocation.time
-        val isSignificantlyNewer = timeDelta > TWO_MINUTES
-        val isSignificantlyOlder = timeDelta < -TWO_MINUTES
-        val isNewer = timeDelta > 0
-
-        // If it's been more than two minutes since the current location, use the new location
-        // because the user has likely moved
-        if (isSignificantlyNewer) {
-            return true
-            // If the new location is more than two minutes older, it must be worse
-        } else if (isSignificantlyOlder) {
-            return false
-        }
-
-        // Check whether the new location fix is more or less accurate
-        val accuracyDelta = (location.accuracy - currentBestLocation.accuracy).toInt()
-        val isLessAccurate = accuracyDelta > 0
-        val isMoreAccurate = accuracyDelta < 0
-        val isSignificantlyLessAccurate = accuracyDelta > 200
-
-        // Check if the old and new location are from the same provider
-        val isFromSameProvider = isSameProvider(location.provider,
-                currentBestLocation.provider)
-
-        // Determine location quality using a combination of timeliness and accuracy
-        if (isMoreAccurate) {
-            return true
-        } else if (isNewer && !isLessAccurate) {
-            return true
-        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-            return true
-        }
-        return false
-    }
-
-
-    /**
-     * Checks whether two providers are the same
-     */
-    private fun isSameProvider(provider1: String?, provider2: String?): Boolean {
-        return if (provider1 == null) {
-            provider2 == null
-        } else provider1 == provider2
-    }
-
 
     override fun onDestroy() {
         // handler.removeCallbacks(sendUpdatesToUI);
         super.onDestroy()
         Log.v("STOP_SERVICE", "DONE")
-        locationManager.removeUpdates(listener)
+        locationManager.removeUpdates(updateListener)
     }
 
+    @SuppressLint("WrongConstant")
+    override fun createNotification(image: String, title: String, subtitle: String, distance: Float) {
+        val builder = NotificationCompat.Builder(applicationContext, "notify_001")
+//        val ii = Intent(applicationContext, RootActivity::class.java)
+//        val pendingIntent = PendingIntent.getActivity(applicationContext, 0, ii, 0)
 
-    inner class MyLocationListener : LocationListener {
+        val bigText = NotificationCompat.BigTextStyle()
+        bigText.bigText(title)
+        bigText.setBigContentTitle(title)
+        bigText.setSummaryText(subtitle)
 
-        override fun onLocationChanged(location: Location) {
-            Log.i(TAG, "Location changed: ${location.latitude}, ${location.longitude}")
-            if (isBetterLocation(location, previousBestLocation)) {
-                location.latitude
-                location.longitude
-                intent.putExtra("Latitude", location.latitude)
-                intent.putExtra("Longitude", location.longitude)
-                intent.putExtra("Provider", location.provider)
-                sendBroadcast(intent)
+//        builder.setContentIntent(pendingIntent)
+        builder.setSmallIcon(R.drawable.ic_car_location)
+        builder.setContentTitle(title)
+        builder.setContentText(subtitle)
+        builder.priority = Notification.PRIORITY_MAX
+        builder.setStyle(bigText)
 
-            }
+        val notificationManager = baseContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel("notify_001",
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_DEFAULT)
+            notificationManager.createNotificationChannel(channel)
         }
 
-        override fun onProviderDisabled(provider: String) {
-            Toast.makeText(applicationContext, "Gps Disabled", Toast.LENGTH_SHORT).show()
+        notificationManager.notify(0, builder.build())
+    }
+
+    private fun readData() {
+        val json = applicationContext.assets.open("locations.json").bufferedReader().use {
+            it.readText()
         }
+        carItemsWrapper = Gson().fromJson<CarItemsWrapper>(json, CarItemsWrapper::class.java)
+    }
 
-
-        override fun onProviderEnabled(provider: String) {
-            Toast.makeText(applicationContext, "Gps Enabled", Toast.LENGTH_SHORT).show()
-        }
-
-
-        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
-
-        }
-
+    @SuppressLint("MissingPermission")
+    private fun handleStart(intent: Intent, startId: Int) {
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        updateListener = LocationUpdateListener(intent, startId, this, { presenter.locationChanged(carItemsWrapper, it) })
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 1000f, updateListener)
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 1000f, updateListener)
     }
 
     companion object {
         val TAG = LocationService::class.java.simpleName
         const val BROADCAST_ACTION = "Location update"
-        private const val TWO_MINUTES = 1000 * 60 * 2
+        const val CHANNEL_ID = "channel_id"
     }
 }
