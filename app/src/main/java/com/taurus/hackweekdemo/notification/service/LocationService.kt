@@ -51,8 +51,8 @@ class LocationService : Service(), LocationServiceView {
     }
 
     @SuppressLint("WrongConstant")
-    override fun createNotification(image: String, title: String, subtitle: String, distance: Float) {
-        notificationHelper.create(title, subtitle)
+    override fun createNotification(image: String, title: String, subtitle: String, distance: Float, vin: String) {
+        notificationHelper.create(title, subtitle, distance, vin)
     }
 
     private fun readData() {
