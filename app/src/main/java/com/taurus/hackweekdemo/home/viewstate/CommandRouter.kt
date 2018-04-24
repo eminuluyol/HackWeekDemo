@@ -8,7 +8,8 @@ internal class CommandRouter(
         private val onUpdateNetworkConnectivityState: ViewStateLoop.ObservableAction<UpdateNetworkConnectivityCommand, HomeScreenViewState>,
         private val onSnackbarChanged: ViewStateLoop.ObservableAction<UpdateSnackbarCommand, HomeScreenViewState>,
         private val onNewItems: ViewStateLoop.ObservableAction<NewItemsCommand, HomeScreenViewState>,
-        private val onCheckGooglePlayServiceAvailability: ViewStateLoop.ObservableAction<CheckGooglePlayServiceAvailabilityCommand, HomeScreenViewState>
+        private val onCheckGooglePlayServiceAvailability: ViewStateLoop.ObservableAction<CheckGooglePlayServiceAvailabilityCommand, HomeScreenViewState>,
+        private val onUpdateMapPinPosition : ViewStateLoop.ObservableAction<UpdateMapPinPositionCommand, HomeScreenViewState>
 ) : ViewStateLoop.ObservableAction<HomeScreenCommand, HomeScreenViewState> {
 
     override fun invoke(command: HomeScreenCommand): Observable<HomeScreenViewState.() -> HomeScreenViewState> {
@@ -17,6 +18,7 @@ internal class CommandRouter(
             is UpdateSnackbarCommand -> onSnackbarChanged(command)
             is NewItemsCommand -> onNewItems(command)
             is CheckGooglePlayServiceAvailabilityCommand -> onCheckGooglePlayServiceAvailability(command)
+            is UpdateMapPinPositionCommand -> onUpdateMapPinPosition(command)
         }
     }
 }

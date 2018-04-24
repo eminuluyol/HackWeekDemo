@@ -11,10 +11,7 @@ import com.taurus.hackweekdemo.home.viewstate.CommandProcessor
 import com.taurus.hackweekdemo.home.viewstate.CommandRouter
 import com.taurus.hackweekdemo.home.viewstate.CommandWrapper
 import com.taurus.hackweekdemo.home.viewstate.HomeScreenViewState
-import com.taurus.hackweekdemo.home.viewstate.actions.CheckGooglePlayServiceAvailabilityAction
-import com.taurus.hackweekdemo.home.viewstate.actions.NewItemsAction
-import com.taurus.hackweekdemo.home.viewstate.actions.UpdateNetworkConnectivityAction
-import com.taurus.hackweekdemo.home.viewstate.actions.UpdateSnackbarAction
+import com.taurus.hackweekdemo.home.viewstate.actions.*
 import com.taurus.hackweekdemo.home.viewstate.commands.CheckGooglePlayServiceAvailabilityCommand
 import com.taurus.hackweekdemo.home.viewstate.commands.HomeScreenCommand
 import dagger.Module
@@ -39,7 +36,8 @@ internal class HomeScreenModule {
             UpdateNetworkConnectivityAction,
             UpdateSnackbarAction,
             NewItemsAction,
-            CheckGooglePlayServiceAvailabilityAction
+            CheckGooglePlayServiceAvailabilityAction,
+            UpdateMapPinPositionAction
     )
 
     @Provides
