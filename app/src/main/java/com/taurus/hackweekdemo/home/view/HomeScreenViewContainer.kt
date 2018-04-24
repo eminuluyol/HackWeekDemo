@@ -4,6 +4,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.LinearSnapHelper
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import com.taurus.hackweekdemo.core.utils.recyclerview.CenterZoomLayoutManager
 import com.taurus.hackweekdemo.home.data.SelectedCarItem
 import com.taurus.hackweekdemo.home.viewstate.CommandProcessor
 import com.taurus.hackweekdemo.home.viewstate.HomeScreenViewState
@@ -24,7 +25,7 @@ internal class HomeScreenViewContainer(
     init {
         carFeedsList.apply {
             adapter = carFeedsAdapter
-            layoutManager = LinearLayoutManager(contentView.context, LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = CenterZoomLayoutManager(contentView.context, CenterZoomLayoutManager.HORIZONTAL, false)
         }
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(carFeedsList)
