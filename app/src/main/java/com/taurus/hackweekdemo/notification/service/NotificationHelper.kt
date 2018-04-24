@@ -19,12 +19,11 @@ class NotificationHelper(val context: Context) {
         val pendingIntent = PendingIntent.getActivity(context.applicationContext, REQUEST_SELECT_LISTING, intent, 0)
 
         val bigText = NotificationCompat.BigTextStyle()
-        bigText.bigText(title)
+        bigText.bigText(subtitle)
         bigText.setBigContentTitle(title)
-        bigText.setSummaryText(subtitle)
 
         builder.setContentIntent(pendingIntent)
-        builder.setSmallIcon(R.drawable.ic_car_location)
+        builder.setSmallIcon(R.drawable.ic_car_notification)
         builder.setContentTitle(title)
         builder.setContentText(subtitle)
         builder.priority = Notification.PRIORITY_MAX
