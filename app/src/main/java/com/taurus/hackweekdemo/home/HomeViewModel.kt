@@ -33,7 +33,6 @@ internal class HomeViewModel @Inject constructor(
 
     private val homeScreenStream = BehaviorSubject.createDefault(initialViewState).toSerialized()
 
-
     init {
         stateLoop.configure(homeScreenStream, commandRouter)
         subscribeToHomeScreenRepository(commandProcessor)

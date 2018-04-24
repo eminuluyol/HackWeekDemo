@@ -17,3 +17,5 @@ internal data class CarItem(
         @SerializedName("name") val name: String,
         @SerializedName("vin") val vin: String
 )
+
+internal data class SelectedCarItem(val carItem: CarItem, val position: Int, val previousPosition: Int)

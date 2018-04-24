@@ -3,29 +3,31 @@ package com.taurus.hackweekdemo.home.view
 import android.Manifest
 import android.app.Activity
 import android.graphics.Color
+import android.graphics.Typeface
 import android.support.v4.app.FragmentActivity
 import android.util.Log
-import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.SupportMapFragment
-import com.taurus.hackweekdemo.home.data.CarItem
-import com.taurus.hackweekdemo.home.viewstate.*
-import com.taurus.hackweekdemo.home.viewstate.commands.UpdateSnackbarCommand
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import com.taurus.hackweekdemo.R
-import android.widget.TextView
-import android.graphics.Typeface
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.TextView
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.taurus.hackweekdemo.R
 import com.taurus.hackweekdemo.core.utils.permission.RxPermissionHandler
 import com.taurus.hackweekdemo.core.utils.rxjava.SchedulingStrategy
+import com.taurus.hackweekdemo.home.data.CarItem
+import com.taurus.hackweekdemo.home.data.SelectedCarItem
 import com.taurus.hackweekdemo.home.location.LocationData
 import com.taurus.hackweekdemo.home.location.LocationObservable
+import com.taurus.hackweekdemo.home.viewstate.*
+import com.taurus.hackweekdemo.home.viewstate.commands.UpdateSnackbarCommand
+
 
 private const val TAG = "MapViewContainer"
 
@@ -49,7 +51,7 @@ internal class MapViewContainer constructor(
                 .locations
                 .compose(schedulingStrategy.apply())
                 .subscribe { it ->
-                    when(it.status) {
+                    when (it.status) {
                         LocationData.Status.PERMISSION_REQUIRED -> {
                             rxPermissionHandler
                                     .ensure(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -88,16 +90,34 @@ internal class MapViewContainer constructor(
             is GoogleServiceError -> {
                 showGoogleServiceError()
             }
-        }
-
-        viewState.selectedCarItem?.let {
-            updateSelectedPinPosition()
+            is UpdateMarkerPosition -> {
+                viewState.selectedCarItem?.let {
+                    updateSelectedPinPosition(it)
+                }
+            }
         }
 
     }
 
-    private fun updateSelectedPinPosition() {
+    private fun updateSelectedPinPosition(selectedCarItem: SelectedCarItem) {
+        val nextDestination = LatLng(selectedCarItem.carItem.coordinates[1], selectedCarItem.carItem.coordinates[0])
+        val marker = markerList[selectedCarItem.position]
+        val previousMarker = markerList[selectedCarItem.previousPosition]
 
+        marker.remove()
+        googleMap?.addMarker(MarkerOptions().position(nextDestination)
+                .title(selectedCarItem.carItem.name)
+                .snippet(selectedCarItem.carItem.address)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location_active)))
+        marker.showInfoWindow()
+
+        previousMarker.remove()
+        googleMap?.addMarker(MarkerOptions().position(previousMarker.position)
+                .title(selectedCarItem.carItem.name)
+                .snippet(selectedCarItem.carItem.address)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location_deactive)))
+
+        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(nextDestination, 16f))
     }
 
     private fun showGoogleServiceError() {
@@ -120,11 +140,11 @@ internal class MapViewContainer constructor(
             markerList.add(googleMap.addMarker(MarkerOptions().position(place)
                     .title(marker.name)
                     .snippet(marker.address)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location))))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location_deactive))))
 
         }
 
-        // move the camera
+        //move the camera
         if (carItems.isNotEmpty()) {
             val item = carItems[0]
             val firstPlace = LatLng(item.coordinates[1], item.coordinates[0])
