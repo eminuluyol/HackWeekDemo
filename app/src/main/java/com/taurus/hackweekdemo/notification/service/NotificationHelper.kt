@@ -15,6 +15,7 @@ class NotificationHelper(val context: Context) {
     fun create(title: String, subtitle: String, distance: Float, vin: String) {
         val builder = NotificationCompat.Builder(context.applicationContext, "notify_001")
         val intent = Intent(context.applicationContext, HomeActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.putExtra(VIN_NUMBER, vin)
         val pendingIntent = PendingIntent.getActivity(context.applicationContext, REQUEST_SELECT_LISTING, intent, 0)
 

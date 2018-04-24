@@ -20,6 +20,7 @@ class LocationService : Service(), LocationServiceView {
     private val presenter = LocationServicePresenter(this)
     private lateinit var notificationHelper: NotificationHelper
     private val binder = LocalBinder()
+    private var isRequesting: Boolean = false
 
     override fun onCreate() {
         super.onCreate()
@@ -49,10 +50,13 @@ class LocationService : Service(), LocationServiceView {
 
     @SuppressLint("MissingPermission")
     fun findNearbyCars(carItems: List<CarItem>) {
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        updateListener = LocationUpdateListener(this, { presenter.locationChanged(carItems, it) })
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 1000f, updateListener)
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 1000f, updateListener)
+        if (!isRequesting && carItems.isNotEmpty()) {
+            isRequesting = true
+            locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            updateListener = LocationUpdateListener(this, { presenter.locationChanged(carItems, it) })
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 1000f, updateListener)
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 1000f, updateListener)
+        }
     }
 
     companion object {

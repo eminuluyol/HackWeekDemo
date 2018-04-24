@@ -16,7 +16,6 @@ class LocationUpdateListener(val context: Context, private val locationChanged: 
         if (isBetterLocation(location, bestLocation)) {
             bestLocation = location
             locationChanged(location)
-//            sendBroadcast(intent)
         }
     }
 
@@ -28,7 +27,6 @@ class LocationUpdateListener(val context: Context, private val locationChanged: 
     override fun onProviderEnabled(provider: String) {
         Log.d(TAG,"GPS enabled")
     }
-
 
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
 
