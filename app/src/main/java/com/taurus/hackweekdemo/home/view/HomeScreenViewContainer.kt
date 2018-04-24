@@ -16,7 +16,7 @@ internal class HomeScreenViewContainer(
         contentView: View,
         private val carFeedsAdapter: CarFeedsAdapter,
         commandProcessor: CommandProcessor,
-        val serviceHelper: LocationServiceHelper
+        private val serviceHelper: LocationServiceHelper
 ) : HomeScreenView {
 
     private val carFeedsList: RecyclerView = contentView.carFeedList

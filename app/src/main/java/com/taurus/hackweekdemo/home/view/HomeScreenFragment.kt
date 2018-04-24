@@ -19,7 +19,6 @@ import com.taurus.hackweekdemo.home.viewstate.commands.CheckGooglePlayServiceAva
 import com.taurus.hackweekdemo.notification.service.LocationServiceHelper
 import javax.inject.Inject
 
-
 internal class HomeScreenFragment : BaseFragment<HomeViewModel>() {
 
     @Inject
@@ -60,7 +59,7 @@ internal class HomeScreenFragment : BaseFragment<HomeViewModel>() {
 
         navigator.bind(this.activity)
         activity?.let { serviceHelper = LocationServiceHelper(it) }
-        val savedSearchAdapter = CarFeedsAdapter(commandProcessor, navigator)
+        val savedSearchAdapter = CarFeedsAdapter(navigator)
         val rootContainer = HomeScreenViewContainer(
                 view,
                 savedSearchAdapter,

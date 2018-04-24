@@ -15,7 +15,6 @@ import kotlinx.android.synthetic.main.car_feeds_list_item.view.*
 
 internal class CarFeedsViewHolder(
         itemView: View,
-        private val commandProcessor: CommandProcessor,
         private val navigator: Navigator
 ) : RecyclerView.ViewHolder(itemView) {
 

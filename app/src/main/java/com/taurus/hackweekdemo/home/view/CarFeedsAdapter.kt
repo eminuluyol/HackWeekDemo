@@ -11,7 +11,6 @@ import com.taurus.hackweekdemo.home.viewstate.CommandProcessor
 import kotlinx.android.synthetic.main.car_feeds_list_item.view.*
 
 internal class CarFeedsAdapter(
-        private val commandProcessor: CommandProcessor,
         private val navigator: Navigator
 ) : RecyclerView.Adapter<CarFeedsViewHolder>() {
 
@@ -20,7 +19,6 @@ internal class CarFeedsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             CarFeedsViewHolder(
                     parent.inflate(R.layout.car_feeds_list_item),
-                    commandProcessor,
                     navigator
             )
 
