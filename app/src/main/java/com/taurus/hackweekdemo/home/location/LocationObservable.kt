@@ -29,9 +29,6 @@ internal class LocationObservable(private val context: Context) {
                 .doOnSubscribe {
                     checkPermissionGranted()
                 }
-                .doOnDispose {
-                    fusedLocationClient.removeLocationUpdates(fineLocationCallback)
-                }
 
     /**
      * Callback
@@ -67,6 +64,10 @@ internal class LocationObservable(private val context: Context) {
             val result = if (it is ResolvableApiException) LocationData.settingsRequired(it) else LocationData.error(it)
             locationSubject.onNext(result)
         }
+    }
+
+    fun stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(fineLocationCallback)
     }
 
     private fun checkPermissionGranted() {

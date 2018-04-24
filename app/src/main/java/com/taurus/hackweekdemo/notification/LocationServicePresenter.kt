@@ -11,7 +11,7 @@ class LocationServicePresenter(val view: LocationServiceView) {
         items.forEach { carItem ->
             val distanceInMeters = getDistanceInMeters(carItem.coordinates[1], carItem.coordinates[0], location)
             if (distanceInMeters <= 1000 && lastCar != carItem) {
-                view.createNotification("", "Opel Astra", "Hey! There's a car near you", distanceInMeters, carItem.vin)
+                view.createNotification("", "Ford Mustang", "Hey! There's a car near you", distanceInMeters, carItem.vin)
                 lastCar = carItem
                 return
             }

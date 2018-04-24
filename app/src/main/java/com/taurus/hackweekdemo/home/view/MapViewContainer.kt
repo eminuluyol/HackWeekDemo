@@ -156,6 +156,7 @@ internal class MapViewContainer constructor(
 
     fun unbind() {
         activity = null
+        locationObservable.stopLocationUpdates()
     }
 
 }
