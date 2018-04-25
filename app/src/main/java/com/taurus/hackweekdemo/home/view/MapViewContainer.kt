@@ -55,7 +55,7 @@ internal class MapViewContainer constructor(
                         }
                         LocationData.Status.LOCATION_SUCCESS -> {
                             val myLocation = LatLng(it.location!!.latitude, it.location.longitude)
-                            googleMap?.addMarker(MarkerOptions().position(myLocation).title("This is Me").icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location_active)))
+                            googleMap?.addMarker(MarkerOptions().position(myLocation).title("This is Me").icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_currentlocation)))
                         }
                         else -> Log.e(TAG, "Unsupported case")
                     }
