@@ -1,7 +1,10 @@
 package com.taurus.hackweekdemo.home.view
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import com.google.android.gms.location.LocationSettingsStatusCodes
 import com.google.android.gms.maps.SupportMapFragment
 import com.taurus.hackweekdemo.R
 import com.taurus.hackweekdemo.core.base.BaseFragment
@@ -88,6 +91,13 @@ internal class HomeScreenFragment : BaseFragment<HomeViewModel>() {
         translations.unbind()
         serviceHelper.unbind()
         super.onDestroyView()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_LOCATION_SETTINGS && resultCode == Activity.RESULT_OK) {
+            mapViewContainer.startLocationUpdate()
+        }
     }
 
     companion object {

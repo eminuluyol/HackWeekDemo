@@ -5,6 +5,7 @@ import android.app.Activity
 import android.support.v4.app.FragmentActivity
 import android.util.Log
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
@@ -23,6 +24,7 @@ import com.taurus.hackweekdemo.home.viewstate.*
 import com.taurus.hackweekdemo.home.viewstate.commands.UpdateSnackbarCommand
 
 private const val TAG = "MapViewContainer"
+const val REQUEST_CODE_LOCATION_SETTINGS = 13
 
 internal class MapViewContainer constructor(
         private val commandProcessor: CommandProcessor,
@@ -46,27 +48,32 @@ internal class MapViewContainer constructor(
                 .subscribe { it ->
                     when (it.status) {
                         LocationData.Status.PERMISSION_REQUIRED -> {
-                            rxPermissionHandler
-                                    .ensure(Manifest.permission.ACCESS_FINE_LOCATION)
-                                    .subscribe { permission ->
-                                        if (permission.granted) {
-                                            Log.i("Burada", " You got it1")
-                                            locationObservable.startLocationUpdates()
-                                        } else {
-                                            Log.i("Burada", " You got it2")
-                                            commandProcessor.process(UpdateSnackbarCommand(PermissionDenied))
-                                        }
-                                    }
+                            handleLocationUpdate()
                         }
                         LocationData.Status.ENABLE_SETTINGS -> {
-                            //TODO haven't supported yet.
+                            enableLocationSettings(it.resolvableApiException)
                         }
                         LocationData.Status.LOCATION_SUCCESS -> {
-                            Log.i("Burada", " You got it3")
                             val myLocation = LatLng(it.location!!.latitude, it.location.longitude)
                             googleMap?.addMarker(MarkerOptions().position(myLocation).title("This is Me").icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location_active)))
                         }
                         else -> Log.e(TAG, "Unsupported case")
+                    }
+                }
+    }
+
+    fun startLocationUpdate() {
+        handleLocationUpdate()
+    }
+
+    private fun handleLocationUpdate() {
+        rxPermissionHandler
+                .ensure(Manifest.permission.ACCESS_FINE_LOCATION)
+                .subscribe { permission ->
+                    if (permission.granted) {
+                        locationObservable.startLocationUpdates()
+                    } else {
+                        commandProcessor.process(UpdateSnackbarCommand(PermissionDenied))
                     }
                 }
     }
@@ -115,7 +122,7 @@ internal class MapViewContainer constructor(
                 .snippet(selectedCarItem.carItem.address)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location_deactive)))
         markerList.remove(previousMarker)
-        markerList.add(selectedCarItem.previousPosition, previousMarker!!)
+        markerList.add(selectedCarItem.previousPosition, previousMarker)
 
         googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(nextDestination, 16f))
         deactivatedMarker?.hideInfoWindow()
@@ -156,6 +163,10 @@ internal class MapViewContainer constructor(
         val adapter = CustomInfoWindowAdapter(activity!!)
         googleMap.setInfoWindowAdapter(adapter);
 
+    }
+
+    private fun enableLocationSettings(exception: ResolvableApiException?) {
+        exception?.startResolutionForResult(activity, REQUEST_CODE_LOCATION_SETTINGS)
     }
 
     fun unbind() {

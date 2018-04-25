@@ -28,7 +28,6 @@ internal class LocationObservable(private val context: Context) {
     val locations: Observable<LocationData>
         get() = locationSubject
                 .doOnSubscribe {
-                    Log.i("Burada", " You got it4")
                     checkPermissionGranted()
                 }
 
@@ -57,7 +56,6 @@ internal class LocationObservable(private val context: Context) {
 
         settingsTask.addOnSuccessListener {
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                Log.i("Burada", " Girdi")
                 location?.let { LocationData.success(location) }
             }
             fusedLocationClient.requestLocationUpdates(locationRequest, fineLocationCallback, null)
