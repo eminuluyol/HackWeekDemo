@@ -37,11 +37,7 @@
         <activity
             android:name=".detail.DetailScreenActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/DetailTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".home.HomeActivity" />
-        </activity>
+            android:theme="@style/DetailTheme"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

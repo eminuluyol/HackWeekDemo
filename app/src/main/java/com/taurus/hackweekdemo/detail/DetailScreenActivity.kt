@@ -20,8 +20,8 @@ internal class DetailScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_screen)
-//        setSupportActionBar(toolbar)
-//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         makeStatusBarTransparent()
         val photoUrl = intent.getStringExtra(PHOTO_URL)
         val imageView = car_image_view
