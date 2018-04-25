@@ -9,13 +9,14 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import com.taurus.hackweekdemo.home.data.CarItem
+import com.taurus.hackweekdemo.home.location.PermissionUtils
 import com.taurus.hackweekdemo.notification.LocationServicePresenter
 import com.taurus.hackweekdemo.notification.LocationServiceView
 
 
 class LocationService : Service(), LocationServiceView {
-    private lateinit var locationManager: LocationManager
-    private lateinit var updateListener: LocationUpdateListener
+    private var locationManager: LocationManager? = null
+    private var updateListener: LocationUpdateListener? = null
     private lateinit var intent: Intent
     private val presenter = LocationServicePresenter(this)
     private lateinit var notificationHelper: NotificationHelper
@@ -40,7 +41,7 @@ class LocationService : Service(), LocationServiceView {
         // handler.removeCallbacks(sendUpdatesToUI);
         super.onDestroy()
         Log.v("STOP_SERVICE", "DONE")
-        locationManager.removeUpdates(updateListener)
+        locationManager?.removeUpdates(updateListener)
     }
 
     @SuppressLint("WrongConstant")
@@ -50,14 +51,16 @@ class LocationService : Service(), LocationServiceView {
 
     @SuppressLint("MissingPermission")
     fun findNearbyCars(carItems: List<CarItem>) {
-        if (!isRequesting && carItems.isNotEmpty()) {
+        if (hasLocationPermissions() && !isRequesting && carItems.isNotEmpty()) {
             isRequesting = true
             locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
             updateListener = LocationUpdateListener(this, { presenter.locationChanged(carItems, it) })
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 1000f, updateListener)
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 1000f, updateListener)
+            locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 1000f, updateListener)
+            locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 1000f, updateListener)
         }
     }
+
+    private fun hasLocationPermissions(): Boolean = PermissionUtils.checkLocationPermission(this)
 
     companion object {
         val TAG = LocationService::class.java.simpleName
