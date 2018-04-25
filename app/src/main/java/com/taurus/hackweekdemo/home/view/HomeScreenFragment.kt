@@ -20,6 +20,7 @@ import com.taurus.hackweekdemo.home.translations.Translations
 import com.taurus.hackweekdemo.home.viewstate.CommandProcessor
 import com.taurus.hackweekdemo.home.viewstate.commands.CheckGooglePlayServiceAvailabilityCommand
 import com.taurus.hackweekdemo.notification.service.LocationServiceHelper
+import kotlinx.android.synthetic.main.fragment_home_screen.view.*
 import javax.inject.Inject
 
 internal class HomeScreenFragment : BaseFragment<HomeViewModel>() {
@@ -53,7 +54,7 @@ internal class HomeScreenFragment : BaseFragment<HomeViewModel>() {
         translations.bind(context!!.resources)
 
         snackbarViewContainer = SnackbarViewContainer(notificationSnackbar, translations, commandProcessor)
-        snackbarViewContainer.bind(view.rootView)
+        snackbarViewContainer.bind(view.coordinator)
 
         val mapFragment: SupportMapFragment? = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         val locationObservable = LocationObservable(context!!)

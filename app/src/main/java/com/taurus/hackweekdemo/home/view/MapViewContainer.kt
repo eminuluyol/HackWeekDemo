@@ -37,6 +37,7 @@ internal class MapViewContainer constructor(
     private var mapFragment: SupportMapFragment? = null
     private var googleMap: GoogleMap? = null
     private val markerList = ArrayList<Marker>()
+    private var currentPostionMarker: Marker? = null
 
     fun bind(activity: FragmentActivity?, mapFragment: SupportMapFragment?) {
         this.activity = activity
@@ -55,7 +56,14 @@ internal class MapViewContainer constructor(
                         }
                         LocationData.Status.LOCATION_SUCCESS -> {
                             val myLocation = LatLng(it.location!!.latitude, it.location.longitude)
-                            googleMap?.addMarker(MarkerOptions().position(myLocation).title("This is Me").icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_currentlocation)))
+                            currentPostionMarker?.let {
+                                currentPostionMarker!!.remove()
+                            }
+                            currentPostionMarker = googleMap?.addMarker(
+                                    MarkerOptions()
+                                            .position(myLocation)
+                                            .title("This is Me")
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_currentlocation)))
                         }
                         else -> Log.e(TAG, "Unsupported case")
                     }

@@ -11,14 +11,17 @@ import kotlinx.android.synthetic.main.activity_detail_screen.*
 import android.support.v4.content.ContextCompat
 import android.view.WindowManager
 import android.os.Build
+import android.support.v4.app.ActivityCompat
+import android.view.MenuItem
+
 
 internal class DetailScreenActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_screen)
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//        setSupportActionBar(toolbar)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         makeStatusBarTransparent()
         val photoUrl = intent.getStringExtra(PHOTO_URL)
         val imageView = car_image_view
@@ -55,6 +58,13 @@ internal class DetailScreenActivity : AppCompatActivity() {
             window.statusBarColor = ContextCompat.getColor(this, android.R.color.transparent)
         }
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> ActivityCompat.finishAfterTransition(this)
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     companion object {

@@ -25,7 +25,7 @@ internal class CustomInfoWindowAdapter(val context: Activity) : GoogleMap.InfoWi
         title.setTextColor(Color.BLACK)
         title.gravity = Gravity.CENTER
         title.setTypeface(null, Typeface.BOLD)
-        title.text = marker.title
+        title.text = "€ 4.000"
 
         val snippet = TextView(context)
         val padding = 4
